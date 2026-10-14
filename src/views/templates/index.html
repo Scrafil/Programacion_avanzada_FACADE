@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notas Estudiantes</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:900px;margin:20px auto;padding:0 12px;background:#f7f7f7;color:#222}
+h1{font-size:22px}form{background:#fff;padding:12px;border:1px solid #ddd;border-radius:8px;margin:12px 0}
+input{padding:6px;margin:4px}button{padding:6px 10px;cursor:pointer}
+table{width:100%;border-collapse:collapse;background:#fff}th,td{border:1px solid #ddd;padding:6px;font-size:14px}
+.error{background:#ffe0e0;border:1px solid #f00;padding:8px;border-radius:6px}
+.ficha{background:#e8f5e9;border:1px solid #4caf50;padding:8px;border-radius:6px}
+.inline{display:inline}
+</style>
+</head>
+<body>
+<h1>CRUD Notas Estudiantes (Hexagonal + Facade)</h1>
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+<form method="post" action="{{ url_for('notes.crear') }}">
+  <b>Crear nota</b><br>
+  <input name="estudiante" placeholder="Estudiante" required>
+  <input name="materia" placeholder="Materia" required>
+  <input name="nota" type="number" step="0.1" min="0" max="5" placeholder="0-5" required>
+  <input name="fecha" type="date" required>
+  <button type="submit">Guardar</button>
+</form>
+
+<form method="get" action="{{ url_for('notes.index') }}">
+  <b>Promedio por estudiante (Facade: ficha_estudiante)</b><br>
+  <input name="estudiante" placeholder="Nombre" value="{{ filtro or '' }}">
+  <button type="submit">Ver ficha</button>
+  {% if ficha %}<div class="ficha">{{ ficha.estudiante }} | total: {{ ficha.total }} | promedio: {{ ficha.promedio }}</div>{% endif %}
+</form>
+
+<table>
+<tr><th>ID</th><th>Estudiante</th><th>Materia</th><th>Nota</th><th>Fecha</th><th>Acciones</th></tr>
+{% for n in notas %}
+<tr>
+<td>{{ n.id }}</td><td>{{ n.estudiante }}</td><td>{{ n.materia }}</td><td>{{ n.nota }}</td><td>{{ n.fecha }}</td>
+<td>
+  <form class="inline" method="post" action="{{ url_for('notes.actualizar', nid=n.id) }}">
+    <input name="nota" type="number" step="0.1" min="0" max="5" value="{{ n.nota }}" style="width:60px" required>
+    <button>Actualizar</button>
+  </form>
+  <form class="inline" method="post" action="{{ url_for('notes.eliminar', nid=n.id) }}">
+    <button>Eliminar</button>
+  </form>
+</td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>
